@@ -170,3 +170,16 @@ if, say, data is sitting in unread kernel structures, though.  Hmm.
 $ python3 -m venv venv
 $ source ./venv/bin/activate 
 ```
+
+# Running
+
+Trivially, so far we can extract all external actions from an Ivy isolate,
+figure out the C++ methods that they correspond to in the transpiled source
+files, and the starting PC addresses in the compiled executable.
+
+```bash
+$ python ./ivydb -i ~/school/phd/projects/ivy_synthesis/sandbox -p echo
+client.sock.recv(V0:client_id) is echo::ext__client__sock__recv(int, echo::tcp__endpoint, echo::msg_t) at 0x100007054
+client.server.ping(V0:server_id) is echo::ext__client__server__ping(int, int, unsigned int) at 0x100008750
+client.server.sock.recv(V0:server_id) is echo::ext__client__server__sock__recv(int, echo::tcp__endpoint, echo::msg_t) at 0x100007eec
+```
