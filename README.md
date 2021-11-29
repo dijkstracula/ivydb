@@ -166,9 +166,61 @@ if, say, data is sitting in unread kernel structures, though.  Hmm.
 
 # Setup
 
+0) Install dependencies and venv.
+
+Set up a virtual environment _for the version of python3 that LLDB expects_, to
+ensure that our native bindings to the debugger work correctly.  On OSX, that
+will be whatever the stock python3 interpreter is (3.8.8 for me, YMMV.) 
+
 ```
-$ python3 -m venv venv
+$ /usr/bin/python3 -m venv venv
 $ source ./venv/bin/activate 
+(venv) $ python --version
+Python 3.8.9
+(venv) $ 
+```
+
+Next, install the ivy-db dependencies (which are a superset of the ivy-language
+dependencies; however, the legacy `setup.py` script in the Ivy repo w/r/t the
+Z3 bindings on OSX seems weirdly broken on python3, owing to issues about not
+being able to write into `/usr/`, but installing wheel and then installing
+manually through pip seems to alleviate this issue.)  Building Z3 will take a
+moment.
+
+```
+(venv) $ pip install wheel
+(venv) $ pip install -r requirements.txt
+...
+Installing collected packages: z3-solver, tarjan, six, pydot, ply
+Successfully installed ply-3.11 pydot-1.4.2 six-1.16.0 tarjan-0.2.3.2 z3-solver-4.8.13.0
+```
+
+`ms-ivy` is not explicitly a dependency because we may wish to either install a
+stock release of Ivy or use a version checked out from source.  Let's do the
+latter; clone the python3 port of Ivy (such as my [WIP
+branch](https://github.com/dijkstracula/ivy/tree/nathan/python3_port)) and
+install it.
+
+```
+(venv) $ pushd ~/code/ivy/
+(venv) $ python setup.py develop
+running develop
+EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+...
+Using /Users/ntaylor/code/ivydb-py/venv/lib/python3.9/site-packages
+Finished processing dependencies for ms-ivy==1.8.16
+(venv) $ which ivyc
+/Users/ntaylor/code/ivydb-py/venv/bin/ivyc
+(venv) $ popd
+(venv) $
+```
+
+On OSX, ensure your `DYLD_LIBRARY_PATH` points into your venv.
+```
+(venv) $ export DYLD_LIBRARY_PATH="${VIRTUAL_ENV}/lib/python3.8/site-packages/z3/lib/"
+(venv) $ echo $DYLD_LIBRARY_PATH
+/Users/ntaylor/code/ivydb-py/venv/lib/python3.8/site-packages/z3/lib/
+(venv) $
 ```
 
 # Running
