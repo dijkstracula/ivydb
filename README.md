@@ -189,6 +189,8 @@ moment.
 
 ```
 (venv) $ pip install wheel
+...
+Successfully installed wheel-0.37.0
 (venv) $ pip install -r requirements.txt
 ...
 Installing collected packages: z3-solver, tarjan, six, pydot, ply
@@ -215,7 +217,22 @@ Finished processing dependencies for ms-ivy==1.8.16
 (venv) $
 ```
 
-On OSX, ensure your `DYLD_LIBRARY_PATH` points into your venv.
+We have to make sure that the dynamic linker can find z3.  The annoying thing
+is that the name resolution isn't quite what we want (for reasons I don't
+really know) so we have to just set up a symlink for now.
+
+```
+(venv) $ ln -s ${VIRTUAL_ENV}/lib/python3.8/site-packages/z3/lib/libz3.dylib ${VIRTUAL_ENV}/lib/python3.8/z3/lib/libz3.4.8.dylib
+(venv) $ ls -l ${VIRTUAL_ENV}/lib/python3.8/site-packages/z3/lib/
+total 44344
+lrwxr-xr-x  1 ntaylor  staff        80 Nov 30 17:54 libz3.4.8.dylib -> /Users/ntaylor/code/ivydb-py/venv/lib/python3.8/site-packages/z3/lib/libz3.dylib
+-rwxr-xr-x  1 ntaylor  staff  22703329 Nov 29 16:36 libz3.dylib
+(venv) $
+```
+
+On OSX, ensure your `DYLD_LIBRARY_PATH` points into your venv.  (This ought to
+be redundant with the above steps.  Why isn't it?)
+
 ```
 (venv) $ export DYLD_LIBRARY_PATH="${VIRTUAL_ENV}/lib/python3.8/site-packages/z3/lib/"
 (venv) $ echo $DYLD_LIBRARY_PATH
