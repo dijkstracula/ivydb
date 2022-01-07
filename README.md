@@ -193,8 +193,8 @@ moment.
 Successfully installed wheel-0.37.0
 (venv) $ pip install -r requirements.txt
 ...
-Installing collected packages: z3-solver, tarjan, six, pydot, ply
-Successfully installed ply-3.11 pydot-1.4.2 six-1.16.0 tarjan-0.2.3.2 z3-solver-4.8.13.0
+Installing collected packages: tarjan, six, pydot, ply
+Successfully installed ply-3.11 pydot-1.4.2 six-1.16.0 tarjan-0.2.3.2
 ```
 
 `ms-ivy` is not explicitly a dependency because we may wish to either install a
@@ -217,27 +217,31 @@ Finished processing dependencies for ms-ivy==1.8.16
 (venv) $
 ```
 
-We have to make sure that the dynamic linker can find z3.  The annoying thing
-is that the name resolution isn't quite what we want (for reasons I don't
-really know) so we have to just set up a symlink for now.
+Next we have a bunch of Z3 stuff to do.  Ivy uses a particular commit that is
+known to work, and it's a submodule of the main Ivy repo.
 
 ```
-(venv) $ ln -s ${VIRTUAL_ENV}/lib/python3.8/site-packages/z3/lib/libz3.dylib ${VIRTUAL_ENV}/lib/python3.8/z3/lib/libz3.4.8.dylib
-(venv) $ ls -l ${VIRTUAL_ENV}/lib/python3.8/site-packages/z3/lib/
-total 44344
-lrwxr-xr-x  1 ntaylor  staff        80 Nov 30 17:54 libz3.4.8.dylib -> /Users/ntaylor/code/ivydb-py/venv/lib/python3.8/site-packages/z3/lib/libz3.dylib
--rwxr-xr-x  1 ntaylor  staff  22703329 Nov 29 16:36 libz3.dylib
-(venv) $
+(venv) $ pushd submodules/z3/src/api/python
 ```
 
-On OSX, ensure your `DYLD_LIBRARY_PATH` points into your venv.  (This ought to
-be redundant with the above steps.  Why isn't it?)
+One minor change: commit `4ac66dd80` is something, I think, we no longer want.
+Back that change out.
 
 ```
-(venv) $ export DYLD_LIBRARY_PATH="${VIRTUAL_ENV}/lib/python3.8/site-packages/z3/lib/"
-(venv) $ echo $DYLD_LIBRARY_PATH
-/Users/ntaylor/code/ivydb-py/venv/lib/python3.8/site-packages/z3/lib/
-(venv) $
+(venv) $ python setup.py develop
+...
+Creating /Users/ntaylor/code/ivy/venv/lib/python3.8/site-packages/z3-solver.egg-link (link to .)
+...
+Finished processing dependencies for z3-solver==4.7.1.0
+```
+
+Ensure that in `src/api/python/z3/z3core.py`, line 13 is uncommented.
+
+Lastly, set up a tags file that knows about ivy, z3, and this project.
+
+```
+(venv) $ ctags -L<(find ~/code/ivy/ivy/)
+(venv) $ ctags --append -R .
 ```
 
 # Running
