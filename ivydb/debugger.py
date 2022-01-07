@@ -19,7 +19,7 @@ def attach_dbg(path: str, prog: str):
 
     #XXX: Why doesn't this actually set it??  I have to still
     # export this in my calling shell (after disabling SIP)
-    target.GetEnvironment().Set("DYLD_LIBRARY_PATH", "/Users/ntaylor/code/ivy/ivy/lib", True)
+    #target.GetEnvironment().Set("DYLD_LIBRARY_PATH", "/Users/ntaylor/code/ivy/ivy/lib", True)
     print(target.GetEnvironment().Get("DYLD_LIBRARY_PATH"))
 
     if not target.IsValid():

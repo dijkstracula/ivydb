@@ -7,6 +7,8 @@ import sys
 import debugger
 import ivy_shim
 
+import ivy # typing: ignore
+
 # Tell MyPy to ignore the lldb import, since we patch in its location in the
 # `modules` import and it won't know about it.
 import lldb #type: ignore
@@ -33,36 +35,28 @@ def main(argv: List[str]) -> int:
 
     target = debugger.attach_dbg(args.ivy_project_dir, args.program)
 
-    p = ivy_shim.compile(args.ivy_project_dir, args.program)
+    with ivy.ivy_module.Module() as im:
+        ag = ivy_shim.compile(args.ivy_project_dir, args.program)
+        clauses = ivy_shim.clauses_for_action(im, "server.read")
+        import pdb; pdb.set_trace()
+        # Set breakpoints on all the exported actions
+        for action in ivy_shim.exported_actions(ag):
+            name = ivy_shim.action_to_cpp_name(args.program, action.args[0].rep)
+            fns = target.FindGlobalFunctions(name, 1, lldb.eMatchTypeRegex)
+            if len(fns) != 1:
+                print(f"Non-unique result for {name}: {list(fns)}")
+                continue
 
-    # Set breakpoints on all the exported actions
-    for action in ivy_shim.exported_actions(p):
-        name = ivy_shim.action_to_cpp_name(args.program, action.args[0].rep)
-        fns = target.FindGlobalFunctions(name, 1, lldb.eMatchTypeRegex)
-        if len(fns) != 1:
-            raise Exception(f"Non-unique result for {name}: {list(fns)}")
+            cpp_name = fns[0].symbol.name
+            entry_pc = fns[0].symbol.GetStartAddress().file_addr
+            #print(f"{action.args[0]} is {cpp_name} at {hex(entry_pc)}")
+            target.BreakpointCreateByAddress(entry_pc)
 
-        cpp_name = fns[0].symbol.name
-        entry_pc = fns[0].symbol.GetStartAddress().file_addr
-        print(f"{action.args[0]} is {cpp_name} at {hex(entry_pc)}")
-        #target.BreakpointCreateByAddress(entry_pc)
-
-    #target.BreakpointCreateByName("main")
-
-    #XXX: probably want to do something with ivy_launch directly.
-    pargs = ["1",
-            "1",
-            "[[0,{addr:0x7f000001,port:49124}],[1,{addr:0x7f000001,port:49125}]]",
-            "[[0,{addr:0x7f000001,port:49126}],[1,{addr:0x7f000001,port:49127}]]"]
-
-    process = target.LaunchSimple(pargs, None, args.ivy_project_dir)
-    if not process:
-        raise Exception("Oops")
-    print(process)
-
-    for f in process.GetThreadAtIndex(0):
-        print(f)
-
+            # Show pre/posts for all actions
+            for action in ivy_shim.actions(p):
+                seq = action.args[1]
+                update = seq.update(im, None)
+                print(f"{action.args[0]}: {update}")
 
     return 0
 
