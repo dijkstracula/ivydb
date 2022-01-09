@@ -1,8 +1,8 @@
 import subprocess
 import sys
 
-import ivy.ivy_init #typing: ignore
-import ivy.ivy_utils #typing: ignore
+import ivy.ivy_init # type: ignore
+import ivy.ivy_utils # type: ignore
 
 def setup_lldb():
     ret = subprocess.check_output(['lldb', '-P'])

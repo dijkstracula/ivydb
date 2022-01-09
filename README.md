@@ -244,6 +244,11 @@ Lastly, set up a tags file that knows about ivy, z3, and this project.
 (venv) $ ctags --append -R .
 ```
 
+# Testing
+
+```bash
+$ python -m unittest
+```
 # Running
 
 Trivially, so far we can extract all external actions from an Ivy isolate,

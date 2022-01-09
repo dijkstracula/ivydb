@@ -7,7 +7,7 @@ import sys
 import debugger
 import ivy_shim
 
-import ivy # typing: ignore
+import ivy # type: ignore
 
 # Tell MyPy to ignore the lldb import, since we patch in its location in the
 # `modules` import and it won't know about it.

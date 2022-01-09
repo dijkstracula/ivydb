@@ -1,0 +1,87 @@
+# Trace for a run of ivy-ts (github.com/dijkstracula/ivy-ts/).
+# This should be okay, since it's taken straight from an execution.
+> server.read(0,[[2],[0],[]])
+[]
+> server.read(0,[[5]])
+[]
+> server.read(0,[[]])
+[]
+> server.insert(0,[6,2])
+[]
+> server.insert(1,[3,7,7])
+[]
+[]
+> server.read(2,[[5],[6]])
+[]
+[[3,7,7]]
+> server.remove(2,[[],[]])
+< server.remove_resp(2,[])
+> server.read(2,[[6]])
+[]
+> server.read(2,[[]])
+[]
+> server.read(2,[[]])
+[]
+> server.read(2,[[]])
+[]
+> server.read(2,[[1]])
+[]
+> server.read(2,[[],[]])
+[]
+> server.insert(2,[7,3,4])
+< server.insert_resp(1,[3,7,7])
+> server.insert(1,[6,0])
+< server.insert_resp(0,[6,2])
+> server.read(0,[[6],[]])
+[[6,0]]
+> server.read(0,[[]])
+[]
+< server.insert_resp(1,[6,0])
+> server.read(0,[[]])
+[]
+< server.insert_resp(2,[7,3,4])
+> server.read(0,[[5],[3],[]])
+[]
+> server.read(0,[[4]])
+[]
+> server.read(0,[[6]])
+[]
+> server.read(2,[[1]])
+[]
+> server.read(0,[[6],[],[3]])
+[]
+> server.read(1,[[],[],[]])
+[[3,7,7]]
+> server.read(0,[[5],[],[]])
+[]
+> server.read(0,[[]])
+[]
+> server.read(0,[[]])
+[]
+> server.insert(2,[2,0])
+< server.remove_resp(1,[])
+> server.read(1,[[]])
+[]
+> server.read(1,[[]])
+[]
+> server.insert(1,[4])
+< server.insert_resp(2,[2,0])
+> server.read(2,[[],[0]])
+[[2,0]]
+> server.read(2,[[6]])
+[]
+[]
+> server.insert(2,[4,5,7])
+< server.insert_resp(1,[4])
+> server.read(1,[[],[0],[0]])
+[]
+> server.remove(1,[[],[],[1]])
+< server.remove_resp(1,[])
+> server.insert(1,[0,0,0])
+< server.insert_resp(0,[0])
+> server.read(0,[[5],[]])
+[]
+[[2,0]]
+< server.insert_resp(2,[4,5,7])
+> server.read(2,[[],[5]])
+[]
