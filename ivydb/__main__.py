@@ -33,30 +33,10 @@ def parse_args(args: List[str]):
 def main(argv: List[str]) -> int:
     args = parse_args(argv[1:])
 
-    target = debugger.attach_dbg(args.ivy_project_dir, args.program)
-
     with ivy.ivy_module.Module() as im:
         ag = ivy_shim.compile(args.ivy_project_dir, args.program)
         clauses = ivy_shim.clauses_for_action(im, "server.read")
         import pdb; pdb.set_trace()
-        # Set breakpoints on all the exported actions
-        for action in ivy_shim.exported_actions(ag):
-            name = ivy_shim.action_to_cpp_name(args.program, action.args[0].rep)
-            fns = target.FindGlobalFunctions(name, 1, lldb.eMatchTypeRegex)
-            if len(fns) != 1:
-                print(f"Non-unique result for {name}: {list(fns)}")
-                continue
-
-            cpp_name = fns[0].symbol.name
-            entry_pc = fns[0].symbol.GetStartAddress().file_addr
-            #print(f"{action.args[0]} is {cpp_name} at {hex(entry_pc)}")
-            target.BreakpointCreateByAddress(entry_pc)
-
-            # Show pre/posts for all actions
-            for action in ivy_shim.actions(p):
-                seq = action.args[1]
-                update = seq.update(im, None)
-                print(f"{action.args[0]}: {update}")
 
     return 0
 
