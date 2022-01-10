@@ -1,4 +1,5 @@
 # Routines around IVy-specific shims.
+import logging
 import os
 
 import modules
@@ -23,6 +24,7 @@ def action_to_cpp_name(isolate: str, fn: str) -> str:
 def compile(path: str, prog: str) -> ivy.ivy_art.AnalysisGraph:
     os.chdir(path)
     fn = path + "/" + prog + ".ivy"
+    logging.info(f"Compiling {fn}")
     with open(fn) as f:
         ivy.ivy_compiler.ivy_load_file(f, create_isolate=False)
         ivy.ivy_module.module.name = fn[:fn.rindex('.')]
@@ -52,7 +54,6 @@ def clauses_for_action(m: ivy.ivy_module.Module, action: str) -> ivy.ivy_ast.For
     # TODO: ivy_to_cpp expands field refs, expands def'ned params, etc...
     # do we need to do any of that for us?
     pre = pre_clauses.to_formula()
-    import pdb; pdb.set_trace()
     return pre
 
 def actions(root: ivy.ivy_parser.Ivy) -> List[ivy.ivy_ast.ActionDef]:

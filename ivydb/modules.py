@@ -7,7 +7,7 @@ import ivy.ivy_utils # type: ignore
 def setup_lldb():
     ret = subprocess.check_output(['lldb', '-P'])
     ret = ret.strip().decode("utf-8")
-    print(ret)
+    #print(ret)
     sys.path.append(ret)
 
 def setup_ivy():
