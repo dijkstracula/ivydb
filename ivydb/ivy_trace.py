@@ -57,19 +57,25 @@ grammar = Lark(r"""
     ID: /[a-zA-Z][a-zA-Z0-9_]*/
     NUM: /[0-9]+/
 
-    ?array: "[" (val ",")* val "]"
+    ?array: "[" ((val ",")* val)? "]"
     ?val: NUM | ID | array
 
     ?arglist: "(" (val ",")* val ")"
 
     ?action_name: (ID ".")* ID
-    ?export_call: "< " action_name arglist _NL val _NL -> export_call_with_ret
-                | "< " action_name arglist _NL -> export_call
+    ?export_call: "> " action_name arglist _NL val _NL -> export_call_with_ret
+                | "> " action_name arglist _NL -> export_call
 
-    ?import_call: "> " action_name arglist _NL
+    ?import_call: "< " action_name arglist _NL
 
     ?start: (import_call | export_call)*
 
     %ignore COMMENT
 """, parser="lalr", transformer=TraceTransformer())
 
+Action = Union[Import, Export]
+
+def actions_from_trace(text: str) -> List[Action]:
+    tree = grammar.parse(text)
+    import pdb; pdb.set_trace()
+    return []
