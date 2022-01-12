@@ -71,7 +71,7 @@ Lastly, set up a tags file that knows about ivy, z3, and this project.
 
 ```
 (venv) $ ctags -L<(find ~/code/ivy/ivy/)
-(venv) $ ctags --append -R .
+(venv) $ ctags --append -R ./ivydb/
 ```
 
 # Testing

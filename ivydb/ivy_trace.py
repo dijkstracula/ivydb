@@ -51,6 +51,8 @@ class TraceTransformer(Transformer):
     def import_call(self, args) -> Import:
         return Import(*args)
 
+# TODO: we need to handle record types of the form {addr:2130706433,port:49133}
+# for things like tcp_test.
 grammar = Lark(r"""
     _NL: /(\r?\n)+/
     COMMENT: /#[^\n]*/ _NL
@@ -77,5 +79,9 @@ Action = Union[Import, Export]
 
 def actions_from_trace(text: str) -> List[Action]:
     tree = grammar.parse(text)
-    import pdb; pdb.set_trace()
-    return []
+
+    # Since the transformer has turned all the children into either Exports or
+    # imports, this is safe, but mypy can't figure that out.  So, ignore the
+    # typing error here and we'll be fine - famous last words...!
+    children: List[Action] = tree.children #type: ignore
+    return children

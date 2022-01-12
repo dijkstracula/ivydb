@@ -7,6 +7,7 @@ import sys
 
 import debugger
 import ivy_shim
+import ivy_trace
 
 import ivy # type: ignore
 
@@ -24,6 +25,9 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     ivyp = parser.add_argument_group("IVy project parameters")
     ivyp.add_argument("-i", "--ivy-isolate",
             help="The path to the IVy source file.",
+            required=True)
+    ivyp.add_argument("-t", "--trace",
+            help="The path to the IVy trace file.",
             required=True)
     ivyp.add_argument("-v", "--verbose",
             help="Dump more info.  More 'v's ==> more info.",
@@ -45,13 +49,18 @@ def main(argv: List[str]) -> int:
     args = parse_args(argv[1:])
     init_logging(args)
 
+    with open(args.trace) as f:
+        trace = f.read()
+        actions = ivy_trace.actions_from_trace(trace)
+    
+    print(actions)
     with ivy.ivy_module.Module() as im:
         dname = os.path.dirname(args.ivy_isolate)
         pname = os.path.basename(args.ivy_isolate)
         ivy_shim.compile(dname, pname)
 
+        logging.debug(f"Module compiled with {len(im.actions)} actions.")
         clauses = ivy_shim.clauses_for_action(im, "server.read")
-        import pdb; pdb.set_trace()
 
     return 0
 
